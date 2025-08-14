@@ -75,8 +75,50 @@
 
 
 
+// pipeline {
+//     agent { label 'jenkins-slave' } // runs on node with this label
+
+//     environment {
+//         DOCKER_IMAGE = "deepaksig/cicd-argocd:${BUILD_NUMBER}"
+//     }
+
+//     stages {
+//         stage('Checkout') {
+//             steps {
+//                 git branch: 'master', url: 'https://github.com/apsdeepakkumar/CI-CD-Jenkins-ARAGOCD.git'
+//             }
+//         }
+
+//         stage('Build Docker Image') {
+//             steps {
+//                 script {
+//                     docker.image('abhishekf5/maven-abhishek-docker-agent:v1').inside('--user root -v /var/run/docker.sock:/var/run/docker.sock') {
+//                         sh "docker build -t ${DOCKER_IMAGE} ."
+//                     }
+//                 }
+//             }
+//         }
+
+//         stage('Push Docker Image') {
+//             steps {
+//                 withCredentials([usernamePassword(
+//                     credentialsId: '25b5d433-ad10-4556-9a88-d14cdbb2ce14', 
+//                     usernameVariable: 'DOCKER_USER', 
+//                     passwordVariable: 'DOCKER_PASS'
+//                 )]) {
+//                     sh '''
+//                         echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+//                         docker push ${DOCKER_IMAGE}
+//                     '''
+//                 }
+//             }
+//         }
+//     }
+// }
+
+
 pipeline {
-    agent { label 'jenkins-slave' } // runs on node with this label
+    agent { label 'jenkins-slave' } // runs on the node with this label
 
     environment {
         DOCKER_IMAGE = "deepaksig/cicd-argocd:${BUILD_NUMBER}"
@@ -91,11 +133,10 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                script {
-                    docker.image('abhishekf5/maven-abhishek-docker-agent:v1').inside('--user root -v /var/run/docker.sock:/var/run/docker.sock') {
-                        sh "docker build -t ${DOCKER_IMAGE} ."
-                    }
-                }
+                // Run Docker build directly on the agent
+                sh """
+                    docker build -t ${DOCKER_IMAGE} .
+                """
             }
         }
 
@@ -106,14 +147,13 @@ pipeline {
                     usernameVariable: 'DOCKER_USER', 
                     passwordVariable: 'DOCKER_PASS'
                 )]) {
-                    sh '''
+                    sh """
                         echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
                         docker push ${DOCKER_IMAGE}
-                    '''
+                    """
                 }
             }
         }
     }
 }
-
 

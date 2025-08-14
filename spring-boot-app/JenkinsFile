@@ -125,6 +125,20 @@ pipeline {
     }
 
     stages {
+
+        stage('Check Docker Access') {
+            steps {
+                sh """
+                    echo "===== Current Jenkins Build User ====="
+                    whoami
+                    echo "===== Groups for This User ====="
+                    id
+                    echo "===== Testing Docker Access ====="
+                    docker ps
+                """
+            }
+        }
+
         stage('Checkout') {
             steps {
                 git branch: 'master', url: 'https://github.com/apsdeepakkumar/CI-CD-Jenkins-ARAGOCD.git'

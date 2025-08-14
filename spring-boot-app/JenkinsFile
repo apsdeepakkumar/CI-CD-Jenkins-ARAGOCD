@@ -76,28 +76,26 @@
 
 
 pipeline {
-    agent { label 'jenkins-slave' } // top-level must be a label, any, or none
+    agent { label 'jenkins-slave' } // runs on node with this label
 
     environment {
         DOCKER_IMAGE = "deepaksig/cicd-argocd:${BUILD_NUMBER}"
     }
 
     stages {
-        stage('Build Docker Image') {
-            agent { 
-                docker { 
-                    image 'abhishekf5/maven-abhishek-docker-agent:v1'
-                    args '--user root -v /var/run/docker.sock:/var/run/docker.sock'
-                }
-            }
-            steps {
-                sh "docker build -t ${DOCKER_IMAGE} ."
-            }
-        }
-
         stage('Checkout') {
             steps {
                 git branch: 'master', url: 'https://github.com/apsdeepakkumar/CI-CD-Jenkins-ARAGOCD.git'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    docker.image('abhishekf5/maven-abhishek-docker-agent:v1').inside('--user root -v /var/run/docker.sock:/var/run/docker.sock') {
+                        sh "docker build -t ${DOCKER_IMAGE} ."
+                    }
+                }
             }
         }
 
@@ -117,4 +115,5 @@ pipeline {
         }
     }
 }
+
 

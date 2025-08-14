@@ -135,7 +135,7 @@ pipeline {
             steps {
                 // Run Docker build directly on the agent
                 sh """
-                    docker build -t ${DOCKER_IMAGE} .
+                    sudo docker build -t ${DOCKER_IMAGE} .
                 """
             }
         }
@@ -149,7 +149,7 @@ pipeline {
                 )]) {
                     sh """
                         echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-                        docker push ${DOCKER_IMAGE}
+                        sudo docker push ${DOCKER_IMAGE}
                     """
                 }
             }

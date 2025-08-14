@@ -118,7 +118,7 @@
 
 
 pipeline {
-    agent { label 'jenkins-slave' } // runs on the node with this label
+    agent { label 'jenkins-slave' }
 
     environment {
         DOCKER_IMAGE = "deepaksig/cicd-argocd:${BUILD_NUMBER}"
@@ -131,12 +131,21 @@ pipeline {
             }
         }
 
+        stage('Build Spring Boot App') {
+            steps {
+                dir('spring-boot-app') {
+                    sh './mvnw clean package -DskipTests'
+                }
+            }
+        }
+
         stage('Build Docker Image') {
             steps {
-                // Run Docker build directly on the agent
-                sh """
-                    sudo docker build -t ${DOCKER_IMAGE} -f spring-boot-app/Dockerfile .
-                """
+                dir('spring-boot-app') {
+                    sh """
+                        sudo docker build -t ${DOCKER_IMAGE} .
+                    """
+                }
             }
         }
 
@@ -156,4 +165,5 @@ pipeline {
         }
     }
 }
+
 

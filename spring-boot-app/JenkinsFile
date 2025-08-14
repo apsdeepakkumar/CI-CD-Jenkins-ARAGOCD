@@ -135,7 +135,7 @@ pipeline {
             steps {
                 // Run Docker build directly on the agent
                 sh """
-                    sudo docker build -t ${DOCKER_IMAGE} .
+                    sudo docker build -t ${DOCKER_IMAGE} -f spring-boot-app/Dockerfile .
                 """
             }
         }

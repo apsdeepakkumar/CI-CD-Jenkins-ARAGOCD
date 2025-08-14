@@ -158,7 +158,7 @@ pipeline {
                 )]) {
                     sh """
                         echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-                        sudo docker push ${DOCKER_IMAGE}
+                        docker push ${DOCKER_IMAGE}
                     """
                 }
             }
